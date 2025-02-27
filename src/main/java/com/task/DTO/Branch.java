@@ -1,17 +1,15 @@
 package com.task.DTO;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
-@AllArgsConstructor
 @Getter
-@ToString
-public class Branch implements CodeResponse{
-    private String address;
-    private String bankName;
-    private String countryISO2;
+@ToString(callSuper = true)
+public class Branch extends BasicCode {
     private String countryName;
-    private boolean isHeadquarter;
-    private String swiftCode;
+
+    public Branch(String address, String bankName, String countryISO2, boolean isHeadquarter, String swiftCode, String countryName) {
+        super(address, bankName, countryISO2, isHeadquarter, swiftCode);
+        this.countryName = countryName;
+    }
 }
