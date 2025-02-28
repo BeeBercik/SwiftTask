@@ -28,7 +28,7 @@ public class SwiftCode {
     @Column(name = "country_name", nullable = false)
     private String countryName;
 
-    @Column(name = "code_type", nullable = false)
+    @Column(name = "code_type")
     private String codeType;
 
     @Column(name = "town_name")
@@ -36,4 +36,12 @@ public class SwiftCode {
 
     @Column(name = "time_zone")
     private String timeZone;
+
+    public SwiftCode(String swiftCode, String address, String bankName, String countryISO2, String countryName) {
+        this.swiftCode = swiftCode;
+        this.address = address;
+        this.bankName = bankName;
+        this.countryISO2 = countryISO2;
+        this.countryName = countryName;
+    }
 }
