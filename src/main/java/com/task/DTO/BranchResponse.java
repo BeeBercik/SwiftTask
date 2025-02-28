@@ -5,10 +5,10 @@ import lombok.ToString;
 
 @Getter
 @ToString(callSuper = true)
-public class Branch extends BasicCode {
+public class BranchResponse extends BasicCodeResponse {
     private String countryName;
 
-    public Branch(String address, String bankName, String countryISO2, boolean isHeadquarter, String swiftCode, String countryName) {
+    public BranchResponse(String address, String bankName, String countryISO2, boolean isHeadquarter, String swiftCode, String countryName) {
         super(address, bankName, countryISO2, isHeadquarter, swiftCode);
         this.countryName = countryName;
     }

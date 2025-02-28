@@ -7,7 +7,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @Getter
 @ToString
-public class BasicCode {
+public class BasicCodeResponse {
     private String address;
     private String bankName;
     private String countryISO2;

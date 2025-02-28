@@ -1,13 +1,15 @@
 package com.task.Services;
 
-import com.task.DTO.BasicCode;
-import com.task.DTO.Branch;
-import com.task.DTO.Headquarter;
+import com.task.DTO.BasicCodeResponse;
+import com.task.DTO.BranchResponse;
+import com.task.DTO.CountryResponse;
+import com.task.DTO.HeadquarterResponse;
 import com.task.Model.SwiftCode;
 import com.task.Repositories.SwiftCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,16 +20,16 @@ public class SwiftCodeService {
 
     private final SwiftCodeRepository swiftCodeRepository;
 
-    public Optional<? extends BasicCode> getCodeDetails(String code) {
+    public Optional<? extends BasicCodeResponse> getCodeDetails(String code) {
         Optional<SwiftCode> swiftCodeBox = this.swiftCodeRepository.findById(code);
         if(swiftCodeBox.isEmpty()) return Optional.empty();
 
         SwiftCode sc = swiftCodeBox.get();
         String prefix = code.substring(0, 8);
         if(sc.getSwiftCode().endsWith("XXX")) {
-            List<BasicCode> branches = this.swiftCodeRepository.findBySwiftCodeStartingWith(prefix).stream().
+            List<BasicCodeResponse> branches = this.swiftCodeRepository.findBySwiftCodeStartingWith(prefix).stream().
                     filter(c -> !c.getSwiftCode().endsWith("XXX"))
-                    .map(c -> new BasicCode(
+                    .map(c -> new BasicCodeResponse(
                             c.getAddress(),
                             c.getBankName(),
                             c.getCountryISO2(),
@@ -36,7 +38,7 @@ public class SwiftCodeService {
                     ))
                     .collect(Collectors.toList());
 
-            return Optional.of(new Headquarter(
+            return Optional.of(new HeadquarterResponse(
                     sc.getAddress(),
                     sc.getBankName(),
                     sc.getCountryISO2(),
@@ -46,7 +48,7 @@ public class SwiftCodeService {
                     branches
             ));
         } else {
-            return Optional.of(new Branch(
+            return Optional.of(new BranchResponse(
                     sc.getAddress(),
                     sc.getBankName(),
                     sc.getCountryISO2(),
@@ -55,5 +57,23 @@ public class SwiftCodeService {
                     sc.getCountryName()
             ));
         }
+    }
+
+    public Optional<CountryResponse> getCodesByCountry(String isoCode) {
+        List<SwiftCode> codesByCountry = this.swiftCodeRepository.findByCountryISO2(isoCode);
+
+        if(codesByCountry.isEmpty()) return Optional.empty();
+
+        List<BasicCodeResponse> swiftCodes = new LinkedList<>();
+        for (SwiftCode singleCode : codesByCountry) {
+            swiftCodes.add(new BasicCodeResponse(
+                    singleCode.getAddress(),
+                    singleCode.getBankName(),
+                    singleCode.getCountryISO2(),
+                    singleCode.getSwiftCode().endsWith("XXX"),
+                    singleCode.getSwiftCode()
+            ));
+        }
+        return Optional.of(new CountryResponse(isoCode, codesByCountry.getFirst().getCountryName(), swiftCodes));
     }
 }

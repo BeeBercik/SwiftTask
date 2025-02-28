@@ -7,11 +7,11 @@ import java.util.List;
 
 @Getter
 @ToString(callSuper = true)
-public class Headquarter extends BasicCode {
+public class HeadquarterResponse extends BasicCodeResponse {
     private String countryName;
-    private List<BasicCode> branches;
+    private List<BasicCodeResponse> branches;
 
-    public Headquarter(String address, String bankName, String countryISO2, boolean isHeadquarter, String swiftCode, String countryName, List<BasicCode> branches) {
+    public HeadquarterResponse(String address, String bankName, String countryISO2, boolean isHeadquarter, String swiftCode, String countryName, List<BasicCodeResponse> branches) {
         super(address, bankName, countryISO2, isHeadquarter, swiftCode);
         this.countryName = countryName;
         this.branches = branches;

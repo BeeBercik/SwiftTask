@@ -12,5 +12,5 @@ import java.util.List;
 public class CountryResponse {
     private String countryISO2;
     private String countryName;
-    private List<BasicCode> swiftCodes;
+    private List<BasicCodeResponse> swiftCodes;
 }
