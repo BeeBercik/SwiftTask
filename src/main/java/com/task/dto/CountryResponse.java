@@ -1,4 +1,4 @@
-package com.task.DTO;
+package com.task.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,5 +12,5 @@ import java.util.List;
 public class CountryResponse {
     private String countryISO2;
     private String countryName;
-    private List<BasicCodeResponse> swiftCodes;
+    private List<SwiftCodeResponse> swiftCodes;
 }

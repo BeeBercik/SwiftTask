@@ -1,16 +1,15 @@
-package com.task.Controllers;
+package com.task.controllers;
 
-import com.task.DTO.BasicCodeResponse;
-import com.task.DTO.CountryResponse;
-import com.task.DTO.SwiftCodeRequest;
-import com.task.Services.SwiftCodeService;
+import com.task.dto.SwiftCodeResponse;
+import com.task.dto.CountryResponse;
+import com.task.dto.SwiftCodeRequest;
+import com.task.services.SwiftCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -22,7 +21,7 @@ public class SwiftController {
 
     @GetMapping("/{swift-code}")
     public ResponseEntity<?> getSwiftCodeDetails(@PathVariable("swift-code") String code) {
-        Optional<BasicCodeResponse> codeBox = this.swiftCodeService.getCodeDetails(code);
+        Optional<SwiftCodeResponse> codeBox = this.swiftCodeService.getCodeDetails(code);
         return codeBox.isPresent()
                 ? ResponseEntity.ok(codeBox.get())
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createResponseMessage("No Swift code with " + code + " code"));
@@ -48,8 +47,8 @@ public class SwiftController {
     public ResponseEntity<HashMap<String, String>> deleteSwiftCode(@PathVariable(name = "swift-code") String swiftCode) {
         boolean result = this.swiftCodeService.deleteSwiftCode(swiftCode);
         return result
-                ? ResponseEntity.ok(this.createResponseMessage("deleted"))
-                : ResponseEntity.badRequest().body(this.createResponseMessage("not deleted"));
+                ? ResponseEntity.ok(this.createResponseMessage("Swift code successfully deleted"))
+                : ResponseEntity.badRequest().body(this.createResponseMessage("Swift code not deleted - does not exist with " + swiftCode + " code"));
     }
 
     private HashMap<String, String> createResponseMessage(String message) {

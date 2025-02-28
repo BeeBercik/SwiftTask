@@ -1,4 +1,4 @@
-package com.task.Model;
+package com.task.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,21 +27,4 @@ public class SwiftCode {
 
     @Column(name = "country_name", nullable = false)
     private String countryName;
-
-    @Column(name = "code_type")
-    private String codeType;
-
-    @Column(name = "town_name")
-    private String townName;
-
-    @Column(name = "time_zone")
-    private String timeZone;
-
-    public SwiftCode(String swiftCode, String address, String bankName, String countryISO2, String countryName) {
-        this.swiftCode = swiftCode;
-        this.address = address;
-        this.bankName = bankName;
-        this.countryISO2 = countryISO2;
-        this.countryName = countryName;
-    }
 }

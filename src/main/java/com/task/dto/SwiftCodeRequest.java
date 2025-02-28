@@ -1,17 +1,19 @@
-package com.task.DTO;
+package com.task.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class SwiftCodeRequest extends BasicCodeResponse {
+public class SwiftCodeRequest {
+    private String address;
+    private String bankName;
+    private String countryISO2;
     private String countryName;
-
-    public SwiftCodeRequest(String address, String bankName, String countryISO2, boolean isHeadquarter, String swiftCode, String countryName) {
-        super(address, bankName, countryISO2, isHeadquarter, swiftCode);
-        this.countryName = countryName;
-    }
+    private boolean isHeadquarter;
+    private String swiftCode;
 }

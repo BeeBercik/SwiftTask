@@ -1,8 +1,8 @@
-package com.task.Services;
+package com.task.services;
 
-import com.task.DTO.*;
-import com.task.Model.SwiftCode;
-import com.task.Repositories.SwiftCodeRepository;
+import com.task.dto.*;
+import com.task.model.SwiftCode;
+import com.task.repositories.SwiftCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,41 +16,41 @@ public class SwiftCodeService {
 
     private final SwiftCodeRepository swiftCodeRepository;
 
-    public Optional<BasicCodeResponse> getCodeDetails(String swiftCode) {
+    public Optional<SwiftCodeResponse> getCodeDetails(String swiftCode) {
         Optional<SwiftCode> swiftCodeOpt = this.swiftCodeRepository.findById(swiftCode);
         if(swiftCodeOpt.isEmpty()) return Optional.empty();
 
         SwiftCode code = swiftCodeOpt.get();
         String prefix = swiftCode.substring(0, 8);
         if(this.isCodeHeadquarter(code)) {
-            List<BasicCodeResponse> branches = this.swiftCodeRepository.findBySwiftCodeStartingWith(prefix).stream().
+            List<SwiftCodeResponse> branches = this.swiftCodeRepository.findBySwiftCodeStartingWith(prefix).stream().
                     filter(c -> !this.isCodeHeadquarter(c))
-                    .map(c -> new BasicCodeResponse(
+                    .map(c -> new SwiftCodeResponse(
                             c.getAddress(),
                             c.getBankName(),
                             c.getCountryISO2(),
-                            true,
-                            c.getSwiftCode()
+                            c.getSwiftCode(),
+                            true
                     ))
                     .collect(Collectors.toList());
 
-            return Optional.of(new HeadquarterResponse(
+            return Optional.of(new SwiftCodeResponse(
                     code.getAddress(),
                     code.getBankName(),
                     code.getCountryISO2(),
-                    true,
-                    code.getSwiftCode(),
                     code.getCountryName(),
+                    code.getSwiftCode(),
+                    true,
                     branches
             ));
         } else {
-            return Optional.of(new BranchResponse(
+            return Optional.of(new SwiftCodeResponse(
                     code.getAddress(),
                     code.getBankName(),
                     code.getCountryISO2(),
-                    false,
                     code.getSwiftCode(),
-                    code.getCountryName()
+                    code.getCountryName(),
+                    false
             ));
         }
     }
@@ -59,13 +59,13 @@ public class SwiftCodeService {
         List<SwiftCode> codesByCountry = this.swiftCodeRepository.findByCountryISO2(isoCode);
         if(codesByCountry.isEmpty()) return Optional.empty();
 
-        List<BasicCodeResponse> swiftCodes = codesByCountry.stream()
-                .map(swiftCode -> new BasicCodeResponse(
+        List<SwiftCodeResponse> swiftCodes = codesByCountry.stream()
+                .map(swiftCode -> new SwiftCodeResponse(
                         swiftCode.getAddress(),
                         swiftCode.getBankName(),
                         swiftCode.getCountryISO2(),
-                        this.isCodeHeadquarter(swiftCode),
-                        swiftCode.getSwiftCode()
+                        swiftCode.getSwiftCode(),
+                        this.isCodeHeadquarter(swiftCode)
                 )).collect(Collectors.toList());
         return Optional.of(new CountryResponse(isoCode, codesByCountry.getFirst().getCountryName(), swiftCodes));
     }
