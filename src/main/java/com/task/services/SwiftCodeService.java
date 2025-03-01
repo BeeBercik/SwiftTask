@@ -1,6 +1,8 @@
 package com.task.services;
 
 import com.task.dto.*;
+import com.task.exceptions.IncorrectIso2Code;
+import com.task.exceptions.IncorrectSwiftCode;
 import com.task.model.SwiftCode;
 import com.task.repositories.SwiftCodeRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,8 @@ public class SwiftCodeService {
     private final SwiftCodeRepository swiftCodeRepository;
 
     public Optional<SwiftCodeResponse> getCodeDetails(String swiftCode) {
+        this.checkSwiftCodeLength(swiftCode);
+
         Optional<SwiftCode> swiftCodeOpt = this.swiftCodeRepository.findById(swiftCode);
         if(swiftCodeOpt.isEmpty()) return Optional.empty();
 
@@ -29,8 +33,8 @@ public class SwiftCodeService {
                             c.getAddress(),
                             c.getBankName(),
                             c.getCountryISO2(),
-                            c.getSwiftCode(),
-                            true
+                            true,
+                            c.getSwiftCode()
                     ))
                     .collect(Collectors.toList());
 
@@ -39,8 +43,8 @@ public class SwiftCodeService {
                     code.getBankName(),
                     code.getCountryISO2(),
                     code.getCountryName(),
-                    code.getSwiftCode(),
                     true,
+                    code.getSwiftCode(),
                     branches
             ));
         } else {
@@ -48,14 +52,15 @@ public class SwiftCodeService {
                     code.getAddress(),
                     code.getBankName(),
                     code.getCountryISO2(),
-                    code.getSwiftCode(),
                     code.getCountryName(),
-                    false
+                    false,
+                    code.getSwiftCode()
             ));
         }
     }
 
     public Optional<CountryResponse> getCodesByCountry(String isoCode) {
+        if(isoCode.length() != 2) throw new IncorrectIso2Code("ISO code must be 2 letters");
         List<SwiftCode> codesByCountry = this.swiftCodeRepository.findByCountryISO2(isoCode);
         if(codesByCountry.isEmpty()) return Optional.empty();
 
@@ -64,16 +69,26 @@ public class SwiftCodeService {
                         swiftCode.getAddress(),
                         swiftCode.getBankName(),
                         swiftCode.getCountryISO2(),
-                        swiftCode.getSwiftCode(),
-                        this.isCodeHeadquarter(swiftCode)
+                        this.isCodeHeadquarter(swiftCode),
+                        swiftCode.getSwiftCode()
                 )).collect(Collectors.toList());
         return Optional.of(new CountryResponse(isoCode, codesByCountry.getFirst().getCountryName(), swiftCodes));
     }
 
     public boolean addNewSwiftCode(SwiftCodeRequest codeRequest) {
+        if(codeRequest.getIsHeadquarter() && !codeRequest.getSwiftCode().endsWith("XXX"))
+            throw new IncorrectSwiftCode("Headquarter must ends with XXX");
+        if(!codeRequest.getIsHeadquarter() && codeRequest.getSwiftCode().endsWith("XXX"))
+            throw new IncorrectSwiftCode("Branch cannot ends with XXX");
+        if(codeRequest.getIsHeadquarter() && codeRequest.getSwiftCode().length() != 11)
+            throw new IncorrectSwiftCode("Headquarter bust me 11 letters");
+        if(!codeRequest.getIsHeadquarter() && codeRequest.getSwiftCode().length() != 8)
+            throw new IncorrectSwiftCode("Branch bust me 8 letters");
+
         if(this.swiftCodeRepository.existsBySwiftCode(codeRequest.getSwiftCode())) return false;
+
         this.swiftCodeRepository.save(new SwiftCode(
-                codeRequest.isHeadquarter() ? codeRequest.getSwiftCode() + "XXX" : codeRequest.getSwiftCode(),
+                codeRequest.getSwiftCode(),
                 codeRequest.getAddress(),
                 codeRequest.getBankName(),
                 codeRequest.getCountryISO2(),
@@ -83,13 +98,21 @@ public class SwiftCodeService {
     }
 
     public boolean deleteSwiftCode(String swiftCode) {
+        this.checkSwiftCodeLength(swiftCode);
+
         if(!this.swiftCodeRepository.existsBySwiftCode(swiftCode)) return false;
         this.swiftCodeRepository.delete(this.swiftCodeRepository.findSwiftCodeBySwiftCode(swiftCode));
+
         return true;
     }
 
     private boolean isCodeHeadquarter(SwiftCode swiftCode) {
         return swiftCode.getSwiftCode().endsWith("XXX");
+    }
+
+    private void checkSwiftCodeLength(String swiftCode) {
+        if(swiftCode.length() != 8 && swiftCode.length() != 11)
+            throw new IncorrectSwiftCode("SWIFT code must be 8 or 11 letters");
     }
 }
 
