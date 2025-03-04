@@ -30,7 +30,7 @@ public class SwiftCodeService {
                                 c.getAddress(),
                                 c.getBankName(),
                                 c.getCountryISO2(),
-                                true,
+                                false,
                                 c.getSwiftCode()
                         ))
                         .collect(Collectors.toList());
@@ -91,8 +91,9 @@ public class SwiftCodeService {
     public boolean deleteSwiftCode(String swiftCode) {
         this.checkSwiftCodeLength(swiftCode);
 
-        if(!this.swiftCodeRepository.existsBySwiftCode(swiftCode)) return false;
-        this.swiftCodeRepository.delete(this.swiftCodeRepository.findSwiftCodeBySwiftCode(swiftCode));
+        Optional<SwiftCode> codeOpt = this.swiftCodeRepository.findById(swiftCode);
+        if(codeOpt.isEmpty()) return false;
+        this.swiftCodeRepository.delete(codeOpt.get());
 
         return true;
     }
