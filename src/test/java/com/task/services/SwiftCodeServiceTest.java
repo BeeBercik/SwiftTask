@@ -1,6 +1,7 @@
 package com.task.services;
 
 import com.task.dto.CountryResponse;
+import com.task.dto.SwiftCodeRequest;
 import com.task.dto.SwiftCodeResponse;
 import com.task.exceptions.IncorrectIso2Code;
 import com.task.exceptions.IncorrectSwiftCode;
@@ -32,21 +33,21 @@ class SwiftCodeServiceTest {
     }
 
     @Test
-    public void testCheckSwiftCodeLength() {
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.getCodeDetails("1234567"));
+    public void testGetCodeDetails_IfIncorrectCode() {
         assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.getCodeDetails("123456789"));
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.getCodeDetails("123456789012"));
+        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.getCodeDetails("12345XXX"));
+        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.getCodeDetails("12345678901"));
     }
 
     @Test
-    public void testCheckIfSwiftCodeExists() {
+    public void testGetCodeDetails_IfNotExists() {
         when(this.swiftCodeRepository.findById("12345678")).thenReturn(Optional.empty());
 
         assertTrue(this.swiftCodeService.getCodeDetails("12345678").isEmpty());
     }
 
     @Test
-    public void testHeadquarter() {
+    public void testGetCodeDetails_Headquarter() {
         Optional<SwiftCodeResponse> headquarterOpt = this.getHeadquarter();
 
         assertTrue(headquarterOpt.isPresent());
@@ -56,7 +57,7 @@ class SwiftCodeServiceTest {
     }
 
     @Test
-    public void testBranch() {
+    public void testGetCodeDetails_Branch() {
         SwiftCode branch = new SwiftCode("LOSOWOSC", "BRANCH ADDRESS", "BANK NAME", "PL", "POLAND");
 
         when(this.swiftCodeRepository.findById(branch.getSwiftCode())).thenReturn(Optional.of(branch));
@@ -69,7 +70,7 @@ class SwiftCodeServiceTest {
     }
 
     @Test
-    public void testBranchInHeadquarter() {
+    public void testGetCodeDetails_BranchInHeadquarter() {
         Optional<SwiftCodeResponse> headquarterOpt = this.getHeadquarter();
         assertTrue(headquarterOpt.isPresent());
 
@@ -88,16 +89,14 @@ class SwiftCodeServiceTest {
         return this.swiftCodeService.getCodeDetails(headQuarter.getSwiftCode());
     }
 
-//    GET CODES BY COUNTRY
-
     @Test
-    public void testISO2CodeLength() {
+    public void testGetCodesByCountry_IfIsoCodeIncorrect() {
         assertThrows(IncorrectIso2Code.class, () -> this.swiftCodeService.getCodesByCountry("X"));
         assertThrows(IncorrectIso2Code.class, () -> this.swiftCodeService.getCodesByCountry("XYZ"));
     }
 
     @Test
-    public void testCodesByCountry() {
+    public void testGetCodesByCountry_IfCorrect() {
         SwiftCode code1 = new SwiftCode("12345678", "BRANCH ADDRESS", "BANK NAME", "PL", "POLAND");
         SwiftCode code2 = new SwiftCode("12345670", "BRANCH ADDRESS", "BANK NAME", "PL", "POLAND");
 
@@ -112,9 +111,60 @@ class SwiftCodeServiceTest {
     }
 
     @Test
-    public void testEmptyCodesListByCountry() {
+    public void testGetCodesByCountry_IfEmptyResultList() {
         when(this.swiftCodeRepository.findByCountryISO2("XX")).thenReturn(List.of());
         assertTrue(this.swiftCodeService.getCodesByCountry("XX").isEmpty());
     }
 
+    @Test
+    public void testAddNewSwiftCode_IfExists() {
+        when(this.swiftCodeRepository.existsBySwiftCode("12345678")).thenReturn(true);
+
+        SwiftCodeRequest swiftCodeRequest = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", false, "12345678");
+
+        assertFalse(this.swiftCodeService.addNewSwiftCode(swiftCodeRequest));
+    }
+
+    @Test
+    public void testAddNewSwiftCode_IfIncorrect() {
+        SwiftCodeRequest swiftCodeRequest1 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", true, "12345678");
+        SwiftCodeRequest swiftCodeRequest2 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", false, "12345678XXX");
+        SwiftCodeRequest swiftCodeRequest3 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", false, "12345");
+        SwiftCodeRequest swiftCodeRequest4 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", true, "1234567890");
+
+        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest1));
+        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest2));
+        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest3));
+        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest4));
+    }
+
+    @Test
+    public void testAddNewSwiftCode_IfCorrect() {
+        when(this.swiftCodeRepository.existsBySwiftCode("12345678")).thenReturn(false);
+
+        SwiftCodeRequest swiftCodeRequest = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", false, "12345678");
+
+        assertTrue(this.swiftCodeService.addNewSwiftCode(swiftCodeRequest));
+    }
+
+    @Test
+    public void testDeleteSwiftCode_IfNotExist() {
+        when(this.swiftCodeRepository.findById("12345678")).thenReturn(Optional.empty());
+        assertFalse(this.swiftCodeService.deleteSwiftCode("12345678"));
+    }
+
+    @Test
+    public void testDeleteSwiftCode_IfIncorrectCode() {
+        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.deleteSwiftCode("123456789"));
+        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.deleteSwiftCode("12345XXX"));
+        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.deleteSwiftCode("12345678901"));
+    }
+
+    @Test
+    public void testDeleteSwiftCode_IfCorrect() {
+        SwiftCode swiftCode = new SwiftCode("12345678", "ADDRESS", "BANK NAME", "PL", "POLAND");
+
+        when(this.swiftCodeRepository.findById("12345678")).thenReturn(Optional.of(swiftCode));
+        assertTrue(this.swiftCodeService.deleteSwiftCode("12345678"));
+    }
 }

@@ -19,7 +19,7 @@ public class SwiftCodeService {
     private final SwiftCodeRepository swiftCodeRepository;
 
     public Optional<SwiftCodeResponse> getCodeDetails(String swiftCode) {
-        this.checkSwiftCodeLength(swiftCode);
+        this.validateSwiftCode(swiftCode);
 
         return this.swiftCodeRepository.findById(swiftCode).map(code -> {
             String prefix = swiftCode.substring(0, 8);
@@ -89,7 +89,7 @@ public class SwiftCodeService {
     }
 
     public boolean deleteSwiftCode(String swiftCode) {
-        this.checkSwiftCodeLength(swiftCode);
+        this.validateSwiftCode(swiftCode);
 
         Optional<SwiftCode> codeOpt = this.swiftCodeRepository.findById(swiftCode);
         if(codeOpt.isEmpty()) return false;
@@ -102,7 +102,11 @@ public class SwiftCodeService {
         return swiftCode.getSwiftCode().endsWith("XXX");
     }
 
-    private void checkSwiftCodeLength(String swiftCode) {
+    private void validateSwiftCode(String swiftCode) {
+        if(swiftCode.length() == 11 && !swiftCode.endsWith("XXX"))
+            throw new IncorrectSwiftCode("Headquarter SWIFT code must be 11 letters and ends with XXX");
+        if(swiftCode.length() == 8 && swiftCode.endsWith("XXX"))
+            throw new IncorrectSwiftCode("Branch SWIFT code must be 8 letters and cannot ends with XXX");
         if(swiftCode.length() != 8 && swiftCode.length() != 11)
             throw new IncorrectSwiftCode("SWIFT code must be 8 or 11 letters");
     }
