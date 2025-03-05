@@ -5,6 +5,7 @@ import com.task.dto.SwiftCodeRequest;
 import com.task.dto.SwiftCodeResponse;
 import com.task.exceptions.IncorrectIso2Code;
 import com.task.exceptions.IncorrectSwiftCode;
+import com.task.exceptions.IncorrectSwiftCodeRequest;
 import com.task.model.SwiftCode;
 import com.task.repositories.SwiftCodeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -126,7 +127,7 @@ class SwiftCodeServiceTest {
     }
 
     @Test
-    public void testAddNewSwiftCode_IfIncorrect() {
+    public void testAddNewSwiftCode_IfIncorrectSwiftCode() {
         SwiftCodeRequest swiftCodeRequest1 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", true, "12345678");
         SwiftCodeRequest swiftCodeRequest2 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", false, "12345678XXX");
         SwiftCodeRequest swiftCodeRequest3 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", false, "12345");
@@ -136,6 +137,21 @@ class SwiftCodeServiceTest {
         assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest2));
         assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest3));
         assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest4));
+    }
+
+    @Test
+    public void testAddNewSwiftCode_IfInvalidateSwiftCodeRequestFields() {
+        SwiftCodeRequest invalidRequest1 = new SwiftCodeRequest("", "BANK NAME", "PL", "POLAND", false, "12345678");
+        SwiftCodeRequest invalidRequest2 = new SwiftCodeRequest("ADDRESS", "", "PL", "POLAND", false, "12345678");
+        SwiftCodeRequest invalidRequest3 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "P", "POLAND", false, "12345678");
+        SwiftCodeRequest invalidRequest4 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "", false, "12345678");
+        SwiftCodeRequest invalidRequest5 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", null, "12345678");
+
+        assertThrows(IncorrectSwiftCodeRequest.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest1));
+        assertThrows(IncorrectSwiftCodeRequest.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest2));
+        assertThrows(IncorrectSwiftCodeRequest.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest3));
+        assertThrows(IncorrectSwiftCodeRequest.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest4));
+        assertThrows(IncorrectSwiftCodeRequest.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest5));
     }
 
     @Test
