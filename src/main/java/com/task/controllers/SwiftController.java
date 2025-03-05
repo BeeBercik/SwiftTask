@@ -37,7 +37,7 @@ public class SwiftController {
     }
 
     @PostMapping()
-    public ResponseEntity<HashMap<String, String>> addNewSwiftCode(@Valid @RequestBody SwiftCodeRequest swiftCodeRequest) {
+    public ResponseEntity<HashMap<String, String>> addNewSwiftCode(@RequestBody SwiftCodeRequest swiftCodeRequest) {
         boolean result = this.swiftCodeService.addNewSwiftCode(swiftCodeRequest);
         return result
                 ? ResponseEntity.ok(this.createResponseMessage("Swift code added"))

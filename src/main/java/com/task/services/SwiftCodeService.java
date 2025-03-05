@@ -3,6 +3,7 @@ package com.task.services;
 import com.task.dto.*;
 import com.task.exceptions.IncorrectIso2Code;
 import com.task.exceptions.IncorrectSwiftCode;
+import com.task.exceptions.IncorrectSwiftCodeRequest;
 import com.task.model.SwiftCode;
 import com.task.repositories.SwiftCodeRepository;
 import lombok.RequiredArgsConstructor;
@@ -102,24 +103,47 @@ public class SwiftCodeService {
         return swiftCode.getSwiftCode().endsWith("XXX");
     }
 
+    private void validateSwiftCode(String swiftCode, Boolean isHeadquarter) {
+        if (swiftCode == null || swiftCode.trim().isEmpty())
+            throw new IncorrectSwiftCode("SWIFT code cannot be empty");
+
+        if (swiftCode.length() != 8 && swiftCode.length() != 11)
+            throw new IncorrectSwiftCode("SWIFT code must be either 8 or 11 letters");
+
+        if (swiftCode.length() == 11 && !swiftCode.endsWith("XXX"))
+            throw new IncorrectSwiftCode("Headquarter SWIFT code must end with XXX");
+
+        if (swiftCode.length() == 8 && swiftCode.endsWith("XXX"))
+            throw new IncorrectSwiftCode("Branch SWIFT code cannot end with XXX");
+
+        if (isHeadquarter != null && isHeadquarter && swiftCode.length() != 11)
+            throw new IncorrectSwiftCode("Headquarter SWIFT code must be 11 letters and end with XXX");
+
+        if (isHeadquarter != null && !isHeadquarter && swiftCode.length() != 8)
+            throw new IncorrectSwiftCode("Branch SWIFT code must be 8 letters and cannot end with XXX");
+    }
+
     private void validateSwiftCode(String swiftCode) {
-        if(swiftCode.length() == 11 && !swiftCode.endsWith("XXX"))
-            throw new IncorrectSwiftCode("Headquarter SWIFT code must be 11 letters and ends with XXX");
-        if(swiftCode.length() == 8 && swiftCode.endsWith("XXX"))
-            throw new IncorrectSwiftCode("Branch SWIFT code must be 8 letters and cannot ends with XXX");
-        if(swiftCode.length() != 8 && swiftCode.length() != 11)
-            throw new IncorrectSwiftCode("SWIFT code must be 8 or 11 letters");
+        this.validateSwiftCode(swiftCode, null);
     }
 
     private void validateSwiftCodeRequest(SwiftCodeRequest codeRequest) {
-        if(codeRequest.getIsHeadquarter() && !codeRequest.getSwiftCode().endsWith("XXX"))
-            throw new IncorrectSwiftCode("Headquarter must ends with XXX");
-        if(!codeRequest.getIsHeadquarter() && codeRequest.getSwiftCode().endsWith("XXX"))
-            throw new IncorrectSwiftCode("Branch cannot ends with XXX");
-        if(codeRequest.getIsHeadquarter() && codeRequest.getSwiftCode().length() != 11)
-            throw new IncorrectSwiftCode("Headquarter bust me 11 letters");
-        if(!codeRequest.getIsHeadquarter() && codeRequest.getSwiftCode().length() != 8)
-            throw new IncorrectSwiftCode("Branch bust me 8 letters");
+        if (codeRequest.getAddress() == null || codeRequest.getAddress().trim().isEmpty())
+            throw new IncorrectSwiftCodeRequest("Address cannot be empty");
+
+        if (codeRequest.getBankName() == null || codeRequest.getBankName().trim().isEmpty())
+            throw new IncorrectSwiftCodeRequest("Bank name cannot be empty");
+
+        if (codeRequest.getCountryISO2() == null || codeRequest.getCountryISO2().length() != 2)
+            throw new IncorrectSwiftCodeRequest("Country ISO2 code must be 2 letters");
+
+        if (codeRequest.getCountryName() == null || codeRequest.getCountryName().trim().isEmpty())
+            throw new IncorrectSwiftCodeRequest("Country name cannot be empty");
+
+        if (codeRequest.getIsHeadquarter() == null)
+            throw new IncorrectSwiftCodeRequest("You must specify whether the code represents a headquarter or not");
+
+        validateSwiftCode(codeRequest.getSwiftCode(), codeRequest.getIsHeadquarter());
     }
 }
 
