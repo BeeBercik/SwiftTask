@@ -1,4 +1,4 @@
-package com.task.services;
+package com.task.unit.services;
 
 import com.task.dto.CountryResponse;
 import com.task.dto.SwiftCodeRequest;
@@ -8,6 +8,7 @@ import com.task.exceptions.IncorrectSwiftCode;
 import com.task.exceptions.IncorrectSwiftCodeRequest;
 import com.task.model.SwiftCode;
 import com.task.repositories.SwiftCodeRepository;
+import com.task.services.SwiftCodeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

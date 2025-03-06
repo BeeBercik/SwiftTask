@@ -1,7 +1,7 @@
-package com.task.controllers;
+package com.task.unit.controllers;
 
+import com.task.controllers.SwiftController;
 import com.task.dto.CountryResponse;
-import com.task.dto.SwiftCodeRequest;
 import com.task.dto.SwiftCodeResponse;
 import com.task.services.SwiftCodeService;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
