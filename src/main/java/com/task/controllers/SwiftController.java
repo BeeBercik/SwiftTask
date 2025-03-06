@@ -25,7 +25,7 @@ public class SwiftController {
         Optional<SwiftCodeResponse> codeBox = this.swiftCodeService.getCodeDetails(swiftCode);
         return codeBox.isPresent()
                 ? ResponseEntity.ok(codeBox.get())
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createResponseMessage("No Swift code with " + swiftCode + " code"));
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createResponseMessage("Swift code not exists"));
     }
 
     @GetMapping("/country/{countryISO2code}")
@@ -33,7 +33,7 @@ public class SwiftController {
         Optional<CountryResponse> codeBox = this.swiftCodeService.getCodesByCountry(isoCode.toUpperCase());
         return codeBox.isPresent()
                 ? ResponseEntity.ok(codeBox.get())
-                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createResponseMessage("No Swift codes with " + isoCode + " country ISO code"));
+                : ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createResponseMessage("No Swift codes with such country ISO code"));
     }
 
     @PostMapping()
@@ -48,8 +48,8 @@ public class SwiftController {
     public ResponseEntity<HashMap<String, String>> deleteSwiftCode(@PathVariable(name = "swift-code") String swiftCode) {
         boolean result = this.swiftCodeService.deleteSwiftCode(swiftCode);
         return result
-                ? ResponseEntity.ok(this.createResponseMessage("Swift code successfully deleted"))
-                : ResponseEntity.badRequest().body(this.createResponseMessage("Swift code not deleted - does not exist with " + swiftCode + " code"));
+                ? ResponseEntity.ok(this.createResponseMessage("Swift code deleted"))
+                : ResponseEntity.badRequest().body(this.createResponseMessage("Swift code not exists"));
     }
 
     private HashMap<String, String> createResponseMessage(String message) {
