@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  swift-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+
+  postgres:
+    image: postgres:15
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: swift
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres

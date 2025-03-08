@@ -1,2 +1,2 @@
-INSERT INTO codes (swift_code, address, name, iso2_code, country_name)
-VALUES ('12345678', 'ADDRESS', 'BANK NAME', 'PL', 'POLAND');
+
+INSERT INTO "codes" ("country iso2 code", "swift code", "address", "name", "country name") values ('PL', '12345678', 'ADDRESS', 'BANK NAME', 'POLAND')

@@ -19,6 +19,7 @@ public class SwiftCodeService {
 
     private final SwiftCodeRepository swiftCodeRepository;
 
+
     public Optional<SwiftCodeResponse> getCodeDetails(String swiftCode) {
         this.validateSwiftCode(swiftCode);
 
@@ -72,7 +73,7 @@ public class SwiftCodeService {
                         swiftCode.getSwiftCode()
                 )).collect(Collectors.toList());
 
-        return Optional.of(new CountryResponse(isoCode, codesByCountry.getFirst().getCountryName(), swiftCodes));
+        return Optional.of(new CountryResponse(isoCode, codesByCountry.get(0).getCountryName(), swiftCodes));
     }
 
     public boolean addNewSwiftCode(SwiftCodeRequest codeRequest) {

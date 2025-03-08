@@ -77,8 +77,8 @@ class SwiftCodeServiceTest {
         assertTrue(headquarterOpt.isPresent());
 
         List<SwiftCodeResponse> branches = headquarterOpt.get().getBranches();
-        assertFalse(branches.getFirst().isHeadquarter());
-        assertNull(branches.getFirst().getCountryName());
+        assertFalse(branches.get(0).isHeadquarter());
+        assertNull(branches.get(0).getCountryName());
     }
 
     private Optional<SwiftCodeResponse> getHeadquarter() {

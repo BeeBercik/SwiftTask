@@ -29,6 +29,7 @@ class SwiftControllerTest {
     @MockitoBean
     private SwiftCodeService swiftCodeService;
 
+
     @Test
     public void testGetSwiftCodeDetails_IfNotFound() throws Exception {
         when(this.swiftCodeService.getCodeDetails("12345678")).thenReturn(Optional.empty());
