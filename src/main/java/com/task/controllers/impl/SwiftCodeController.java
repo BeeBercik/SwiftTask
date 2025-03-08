@@ -1,10 +1,10 @@
-package com.task.controllers;
+package com.task.controllers.impl;
 
+import com.task.controllers.SwiftCodeControllerInterface;
 import com.task.dto.SwiftCodeResponse;
-import com.task.dto.CountryResponse;
+import com.task.dto.CountrySwiftCodesResponse;
 import com.task.dto.SwiftCodeRequest;
-import com.task.services.SwiftCodeService;
-import jakarta.validation.Valid;
+import com.task.services.impl.SwiftCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import java.util.Optional;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/swift-codes")
-public class SwiftController {
+public class SwiftCodeController implements SwiftCodeControllerInterface {
 
     private final SwiftCodeService swiftCodeService;
 
@@ -30,7 +30,7 @@ public class SwiftController {
 
     @GetMapping("/country/{countryISO2code}")
     public ResponseEntity<?> getAllSwiftCodesByCountry(@PathVariable(name = "countryISO2code") String isoCode) {
-        Optional<CountryResponse> codeBox = this.swiftCodeService.getCodesByCountry(isoCode.toUpperCase());
+        Optional<CountrySwiftCodesResponse> codeBox = this.swiftCodeService.getCodesByCountry(isoCode.toUpperCase());
         return codeBox.isPresent()
                 ? ResponseEntity.ok(codeBox.get())
                 : ResponseEntity.status(HttpStatus.NOT_FOUND).body(this.createResponseMessage("No Swift codes with such country ISO code"));

@@ -1,11 +1,12 @@
-package com.task.services;
+package com.task.services.impl;
 
 import com.task.dto.*;
-import com.task.exceptions.IncorrectIso2Code;
-import com.task.exceptions.IncorrectSwiftCode;
-import com.task.exceptions.IncorrectSwiftCodeRequest;
+import com.task.exceptions.IncorrectIso2CodeException;
+import com.task.exceptions.IncorrectSwiftCodeException;
+import com.task.exceptions.IncorrectSwiftCodeRequestException;
 import com.task.model.SwiftCode;
 import com.task.repositories.SwiftCodeRepository;
+import com.task.services.SwiftCodeServiceInterface;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,9 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class SwiftCodeService {
+public class SwiftCodeService implements SwiftCodeServiceInterface {
 
     private final SwiftCodeRepository swiftCodeRepository;
-
 
     public Optional<SwiftCodeResponse> getCodeDetails(String swiftCode) {
         this.validateSwiftCode(swiftCode);
@@ -59,8 +59,8 @@ public class SwiftCodeService {
         });
     }
 
-    public Optional<CountryResponse> getCodesByCountry(String isoCode) {
-        if(isoCode.length() != 2) throw new IncorrectIso2Code("ISO code must be 2 letters");
+    public Optional<CountrySwiftCodesResponse> getCodesByCountry(String isoCode) {
+        if(isoCode.length() != 2) throw new IncorrectIso2CodeException("ISO code must be 2 letters");
         List<SwiftCode> codesByCountry = this.swiftCodeRepository.findByCountryISO2(isoCode);
         if(codesByCountry.isEmpty()) return Optional.empty();
 
@@ -73,7 +73,7 @@ public class SwiftCodeService {
                         swiftCode.getSwiftCode()
                 )).collect(Collectors.toList());
 
-        return Optional.of(new CountryResponse(isoCode, codesByCountry.get(0).getCountryName(), swiftCodes));
+        return Optional.of(new CountrySwiftCodesResponse(isoCode, codesByCountry.get(0).getCountryName(), swiftCodes));
     }
 
     public boolean addNewSwiftCode(SwiftCodeRequest codeRequest) {
@@ -106,22 +106,22 @@ public class SwiftCodeService {
 
     private void validateSwiftCode(String swiftCode, Boolean isHeadquarter) {
         if (swiftCode == null || swiftCode.trim().isEmpty())
-            throw new IncorrectSwiftCode("SWIFT code cannot be empty");
+            throw new IncorrectSwiftCodeException("SWIFT code cannot be empty");
 
         if (swiftCode.length() != 8 && swiftCode.length() != 11)
-            throw new IncorrectSwiftCode("SWIFT code must be either 8 or 11 letters");
+            throw new IncorrectSwiftCodeException("SWIFT code must be either 8 or 11 letters");
 
         if (swiftCode.length() == 11 && !swiftCode.endsWith("XXX"))
-            throw new IncorrectSwiftCode("Headquarter SWIFT code must end with XXX");
+            throw new IncorrectSwiftCodeException("Headquarter SWIFT code must end with XXX");
 
         if (swiftCode.length() == 8 && swiftCode.endsWith("XXX"))
-            throw new IncorrectSwiftCode("Branch SWIFT code cannot end with XXX");
+            throw new IncorrectSwiftCodeException("Branch SWIFT code cannot end with XXX");
 
         if (isHeadquarter != null && isHeadquarter && swiftCode.length() != 11)
-            throw new IncorrectSwiftCode("Headquarter SWIFT code must be 11 letters and end with XXX");
+            throw new IncorrectSwiftCodeException("Headquarter SWIFT code must be 11 letters and end with XXX");
 
         if (isHeadquarter != null && !isHeadquarter && swiftCode.length() != 8)
-            throw new IncorrectSwiftCode("Branch SWIFT code must be 8 letters and cannot end with XXX");
+            throw new IncorrectSwiftCodeException("Branch SWIFT code must be 8 letters and cannot end with XXX");
     }
 
     private void validateSwiftCode(String swiftCode) {
@@ -130,19 +130,19 @@ public class SwiftCodeService {
 
     private void validateSwiftCodeRequest(SwiftCodeRequest codeRequest) {
         if (codeRequest.getAddress() == null || codeRequest.getAddress().trim().isEmpty())
-            throw new IncorrectSwiftCodeRequest("Address cannot be empty");
+            throw new IncorrectSwiftCodeRequestException("Address cannot be empty");
 
         if (codeRequest.getBankName() == null || codeRequest.getBankName().trim().isEmpty())
-            throw new IncorrectSwiftCodeRequest("Bank name cannot be empty");
+            throw new IncorrectSwiftCodeRequestException("Bank name cannot be empty");
 
         if (codeRequest.getCountryISO2() == null || codeRequest.getCountryISO2().length() != 2)
-            throw new IncorrectSwiftCodeRequest("Country ISO2 code must be 2 letters");
+            throw new IncorrectSwiftCodeRequestException("Country ISO2 code must be 2 letters");
 
         if (codeRequest.getCountryName() == null || codeRequest.getCountryName().trim().isEmpty())
-            throw new IncorrectSwiftCodeRequest("Country name cannot be empty");
+            throw new IncorrectSwiftCodeRequestException("Country name cannot be empty");
 
         if (codeRequest.getIsHeadquarter() == null)
-            throw new IncorrectSwiftCodeRequest("You must specify whether the code represents a headquarter or not");
+            throw new IncorrectSwiftCodeRequestException("You must specify whether the code represents a headquarter or not");
 
         validateSwiftCode(codeRequest.getSwiftCode(), codeRequest.getIsHeadquarter());
     }

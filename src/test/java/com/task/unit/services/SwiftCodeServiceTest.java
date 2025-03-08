@@ -1,14 +1,14 @@
 package com.task.unit.services;
 
-import com.task.dto.CountryResponse;
+import com.task.dto.CountrySwiftCodesResponse;
 import com.task.dto.SwiftCodeRequest;
 import com.task.dto.SwiftCodeResponse;
-import com.task.exceptions.IncorrectIso2Code;
-import com.task.exceptions.IncorrectSwiftCode;
-import com.task.exceptions.IncorrectSwiftCodeRequest;
+import com.task.exceptions.IncorrectIso2CodeException;
+import com.task.exceptions.IncorrectSwiftCodeException;
+import com.task.exceptions.IncorrectSwiftCodeRequestException;
 import com.task.model.SwiftCode;
 import com.task.repositories.SwiftCodeRepository;
-import com.task.services.SwiftCodeService;
+import com.task.services.impl.SwiftCodeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -36,9 +36,9 @@ class SwiftCodeServiceTest {
 
     @Test
     public void testGetCodeDetails_IfIncorrectCode() {
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.getCodeDetails("123456789"));
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.getCodeDetails("12345XXX"));
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.getCodeDetails("12345678901"));
+        assertThrows(IncorrectSwiftCodeException.class, () -> this.swiftCodeService.getCodeDetails("123456789"));
+        assertThrows(IncorrectSwiftCodeException.class, () -> this.swiftCodeService.getCodeDetails("12345XXX"));
+        assertThrows(IncorrectSwiftCodeException.class, () -> this.swiftCodeService.getCodeDetails("12345678901"));
     }
 
     @Test
@@ -93,8 +93,8 @@ class SwiftCodeServiceTest {
 
     @Test
     public void testGetCodesByCountry_IfIsoCodeIncorrect() {
-        assertThrows(IncorrectIso2Code.class, () -> this.swiftCodeService.getCodesByCountry("X"));
-        assertThrows(IncorrectIso2Code.class, () -> this.swiftCodeService.getCodesByCountry("XYZ"));
+        assertThrows(IncorrectIso2CodeException.class, () -> this.swiftCodeService.getCodesByCountry("X"));
+        assertThrows(IncorrectIso2CodeException.class, () -> this.swiftCodeService.getCodesByCountry("XYZ"));
     }
 
     @Test
@@ -104,9 +104,9 @@ class SwiftCodeServiceTest {
 
         when(this.swiftCodeRepository.findByCountryISO2("PL")).thenReturn(List.of(code1, code2));
 
-        Optional<CountryResponse> responseOpt = this.swiftCodeService.getCodesByCountry("PL");
+        Optional<CountrySwiftCodesResponse> responseOpt = this.swiftCodeService.getCodesByCountry("PL");
         assertTrue(responseOpt.isPresent());
-        CountryResponse response = responseOpt.get();
+        CountrySwiftCodesResponse response = responseOpt.get();
         assertEquals("PL", response.getCountryISO2());
         assertEquals("POLAND", response.getCountryName());
         assertEquals(2, response.getSwiftCodes().size());
@@ -134,10 +134,10 @@ class SwiftCodeServiceTest {
         SwiftCodeRequest swiftCodeRequest3 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", false, "12345");
         SwiftCodeRequest swiftCodeRequest4 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", true, "1234567890");
 
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest1));
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest2));
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest3));
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest4));
+        assertThrows(IncorrectSwiftCodeException.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest1));
+        assertThrows(IncorrectSwiftCodeException.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest2));
+        assertThrows(IncorrectSwiftCodeException.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest3));
+        assertThrows(IncorrectSwiftCodeException.class, () -> this.swiftCodeService.addNewSwiftCode(swiftCodeRequest4));
     }
 
     @Test
@@ -148,11 +148,11 @@ class SwiftCodeServiceTest {
         SwiftCodeRequest invalidRequest4 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "", false, "12345678");
         SwiftCodeRequest invalidRequest5 = new SwiftCodeRequest("ADDRESS", "BANK NAME", "PL", "POLAND", null, "12345678");
 
-        assertThrows(IncorrectSwiftCodeRequest.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest1));
-        assertThrows(IncorrectSwiftCodeRequest.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest2));
-        assertThrows(IncorrectSwiftCodeRequest.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest3));
-        assertThrows(IncorrectSwiftCodeRequest.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest4));
-        assertThrows(IncorrectSwiftCodeRequest.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest5));
+        assertThrows(IncorrectSwiftCodeRequestException.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest1));
+        assertThrows(IncorrectSwiftCodeRequestException.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest2));
+        assertThrows(IncorrectSwiftCodeRequestException.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest3));
+        assertThrows(IncorrectSwiftCodeRequestException.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest4));
+        assertThrows(IncorrectSwiftCodeRequestException.class, () -> this.swiftCodeService.addNewSwiftCode(invalidRequest5));
     }
 
     @Test
@@ -172,9 +172,9 @@ class SwiftCodeServiceTest {
 
     @Test
     public void testDeleteSwiftCode_IfIncorrectCode() {
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.deleteSwiftCode("123456789"));
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.deleteSwiftCode("12345XXX"));
-        assertThrows(IncorrectSwiftCode.class, () -> this.swiftCodeService.deleteSwiftCode("12345678901"));
+        assertThrows(IncorrectSwiftCodeException.class, () -> this.swiftCodeService.deleteSwiftCode("123456789"));
+        assertThrows(IncorrectSwiftCodeException.class, () -> this.swiftCodeService.deleteSwiftCode("12345XXX"));
+        assertThrows(IncorrectSwiftCodeException.class, () -> this.swiftCodeService.deleteSwiftCode("12345678901"));
     }
 
     @Test

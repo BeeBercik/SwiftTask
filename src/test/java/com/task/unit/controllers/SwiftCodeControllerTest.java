@@ -1,9 +1,9 @@
 package com.task.unit.controllers;
 
-import com.task.controllers.SwiftController;
-import com.task.dto.CountryResponse;
+import com.task.controllers.impl.SwiftCodeController;
+import com.task.dto.CountrySwiftCodesResponse;
 import com.task.dto.SwiftCodeResponse;
-import com.task.services.SwiftCodeService;
+import com.task.services.impl.SwiftCodeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,8 +20,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(SwiftController.class)
-class SwiftControllerTest {
+@WebMvcTest(SwiftCodeController.class)
+class SwiftCodeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,7 +61,7 @@ class SwiftControllerTest {
     @Test
     public void testGetAllSwiftCodesByCountry_IfSuccess() throws Exception {
         when(this.swiftCodeService.getCodesByCountry("PL")).thenReturn(
-                Optional.of(new CountryResponse(
+                Optional.of(new CountrySwiftCodesResponse(
                         "PL",
                         "POLAND",
                         List.of(new SwiftCodeResponse(
