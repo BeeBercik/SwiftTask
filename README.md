@@ -102,7 +102,7 @@ Project includes 31 tests.
 
 2.	**Get inside the app container:**<br>
 ```
-docker exec -it <swift-app-container-name> /bin/shz
+docker exec -it <swift-app-container-name> /bin/sh
 ```
 
 3. **Run all tests inside the container:**<br>

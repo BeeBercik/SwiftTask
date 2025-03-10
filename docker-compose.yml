@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: swift-application
+    container_name: swift-app
     ports:
       - "8080:8080"
     depends_on:
@@ -14,6 +16,7 @@ services:
 
   postgres:
     image: postgres:15
+    container_name: swift-app-db
     ports:
       - "5432:5432"
     environment:
