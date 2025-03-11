@@ -5,6 +5,9 @@ import lombok.ToString;
 
 import java.util.List;
 
+/**
+ * Represents a collection of swift codes for a specific country
+ */
 @Getter
 @ToString
 public class CountrySwiftCodesResponse {

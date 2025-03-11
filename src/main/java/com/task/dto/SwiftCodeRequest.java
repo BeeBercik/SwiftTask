@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
+/**
+ * Represents a request to create new swift code
+ */
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

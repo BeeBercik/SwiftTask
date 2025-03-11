@@ -14,12 +14,23 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * Service class for managing SWIFT codes.
+ * This class provides methods for retrieving, adding, and deleting SWIFT codes,
+ * as well as validating their correctness.
+ */
 @Service
 @RequiredArgsConstructor
 public class SwiftCodeService implements SwiftCodeServiceInterface {
 
     private final SwiftCodeRepository swiftCodeRepository;
 
+    /**
+     * Retrieves details of a specific SWIFT code.
+     * @param swiftCode swift code to search for
+     * @return Optional of {@link SwiftCodeResponse} if found, otherwise empty
+     * @throws IncorrectSwiftCodeException if swift code is incorrect
+     */
     public Optional<SwiftCodeResponse> getCodeDetails(String swiftCode) {
         this.validateSwiftCode(swiftCode);
 
@@ -59,6 +70,12 @@ public class SwiftCodeService implements SwiftCodeServiceInterface {
         });
     }
 
+    /**
+     * Retrieves all SWIFT codes associated with given iso2 country code
+     * @param isoCode given iso2 code
+     * @return optional of {@link CountrySwiftCodesResponse} if swift codes exist for the country otherwise empty
+     * @throws IncorrectIso2CodeException if iso2 code is invalid
+     */
     public Optional<CountrySwiftCodesResponse> getCodesByCountry(String isoCode) {
         if(isoCode.length() != 2) throw new IncorrectIso2CodeException("ISO code must be 2 letters");
         List<SwiftCode> codesByCountry = this.swiftCodeRepository.findByCountryISO2(isoCode);
@@ -76,6 +93,12 @@ public class SwiftCodeService implements SwiftCodeServiceInterface {
         return Optional.of(new CountrySwiftCodesResponse(isoCode, codesByCountry.get(0).getCountryName(), swiftCodes));
     }
 
+    /**
+     * Adds new swift code to the database
+     * @param codeRequest request containing swift code details to add
+     * @return true if code was added successfully otherwise false
+     * @throws IncorrectSwiftCodeRequestException if provided request is invalid
+     */
     public boolean addNewSwiftCode(SwiftCodeRequest codeRequest) {
         this.validateSwiftCodeRequest(codeRequest);
         if(this.swiftCodeRepository.existsBySwiftCode(codeRequest.getSwiftCode())) return false;
@@ -90,6 +113,12 @@ public class SwiftCodeService implements SwiftCodeServiceInterface {
         return true;
     }
 
+    /**
+     * Deletes existing swift code from the database
+     * @param swiftCode given swift code to delete
+     * @return true if code was deleted successfully otherwise false
+     * @throws IncorrectSwiftCodeException if given swift code is invalid
+     */
     public boolean deleteSwiftCode(String swiftCode) {
         this.validateSwiftCode(swiftCode);
 
@@ -100,10 +129,21 @@ public class SwiftCodeService implements SwiftCodeServiceInterface {
         return true;
     }
 
+    /**
+     * Checks whether given swift code is headquarter or branch
+     * @param swiftCode given swift code to check
+     * @return true if swift code is headquarter otherwise false
+     */
     private boolean isCodeHeadquarter(SwiftCode swiftCode) {
         return swiftCode.getSwiftCode().endsWith("XXX");
     }
 
+    /**
+     * Validates swift code - its format and correctness
+     * @param swiftCode given swift code to validate
+     * @param isHeadquarter says if given swift code is headquarter or not
+     * @throws IncorrectSwiftCodeException if swift code is invalid
+     */
     private void validateSwiftCode(String swiftCode, Boolean isHeadquarter) {
         if (swiftCode == null || swiftCode.trim().isEmpty())
             throw new IncorrectSwiftCodeException("SWIFT code cannot be empty");
@@ -124,10 +164,20 @@ public class SwiftCodeService implements SwiftCodeServiceInterface {
             throw new IncorrectSwiftCodeException("Branch SWIFT code must be 8 letters and cannot end with XXX");
     }
 
+    /**
+     * Validates the format of a swift code without checking if it is a headquarter
+     * @param swiftCode given swift code to validate
+     * @throws IncorrectSwiftCodeException if the SWIFT code is invalid
+     */
     private void validateSwiftCode(String swiftCode) {
         this.validateSwiftCode(swiftCode, null);
     }
 
+    /**
+     * Validates swift code request to add new swift code
+     * @param codeRequest given request with swift code details to add
+     * @throws IncorrectSwiftCodeRequestException when code request is incorrect
+     */
     private void validateSwiftCodeRequest(SwiftCodeRequest codeRequest) {
         if (codeRequest.getAddress() == null || codeRequest.getAddress().trim().isEmpty())
             throw new IncorrectSwiftCodeRequestException("Address cannot be empty");

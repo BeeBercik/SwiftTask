@@ -9,6 +9,10 @@ import lombok.ToString;
 
 import java.util.List;
 
+/**
+ * Represents a response containing details about a SWIFT code.
+ * This class is used for serializing and deserializing JSON responses.
+ */
 @NoArgsConstructor
 @Getter
 @ToString
@@ -34,7 +38,17 @@ public class SwiftCodeResponse {
     private String swiftCode;
     private List<SwiftCodeResponse> branches;
 
-    // Headquaret constructor
+    /**
+     * Constructor for a headquarter swift code with associated branches.
+     *
+     * @param address       address of the headquarter.
+     * @param bankName      name of the bank.
+     * @param countryISO2   iso 2-letter country code.
+     * @param countryName   full name of the country.
+     * @param isHeadquarter whether this is a headquarter SWIFT code.
+     * @param swiftCode     SWIFT code.
+     * @param branches      list of associated branch SWIFT codes.
+     */
     public SwiftCodeResponse(String address, String bankName, String countryISO2, String countryName, boolean isHeadquarter, String swiftCode, List<SwiftCodeResponse> branches) {
         this.address = address;
         this.bankName = bankName;
@@ -45,7 +59,15 @@ public class SwiftCodeResponse {
         this.branches = branches;
     }
 
-    // branch in headquarter constructor
+    /**
+     * Constructor for a branch SWIFT code inside a headquarter's branch array.
+     *
+     * @param address       address of the branch.
+     * @param bankName      name of the bank.
+     * @param countryISO2   ISO 2-letter country code.
+     * @param isHeadquarter whether this SWIFT code belongs to a headquarter.
+     * @param swiftCode     SWIFT code.
+     */
     public SwiftCodeResponse(String address, String bankName, String countryISO2,  boolean isHeadquarter, String swiftCode) {
         this.address = address;
         this.bankName = bankName;
@@ -54,7 +76,17 @@ public class SwiftCodeResponse {
         this.swiftCode = swiftCode;
     }
 
-    // branch constructor, object in country list
+    /**
+     * Constructor for an independent branch swift code.
+     * Used in {@link CountrySwiftCodesResponse} to represent a swift code that is part of a country's SWIFT code list.
+     *
+     * @param address       address of the branch.
+     * @param bankName      name of the bank.
+     * @param countryISO2   iso 2-letter country code.
+     * @param countryName   full name of the country.
+     * @param isHeadquarter whether this SWIFT code belongs to a headquarter.
+     * @param swiftCode     SWIFT code.
+     */
     public SwiftCodeResponse(String address, String bankName, String countryISO2,  String countryName, boolean isHeadquarter, String swiftCode) {
         this.address = address;
         this.bankName = bankName;

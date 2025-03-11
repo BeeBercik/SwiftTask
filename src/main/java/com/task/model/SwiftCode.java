@@ -3,6 +3,9 @@ package com.task.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+/**
+ * Represents a swift code entity stored in the database
+ */
 @Entity
 @NoArgsConstructor
 @Getter

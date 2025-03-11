@@ -1,6 +1,6 @@
 ### 🏦 Swift Codes Management Application
 
-This project provides a RESTful API to manage SWIFT codes data (headquarters and branches) for different countries. 
+This project provides a RESTful API to manage SWIFT codes data (headquarters and branches) for various countries. 
 
 The application automatically initialize the database with predefined data when the application starts. This ensures that the service is ready to use from the moment it is deployed.
 
@@ -43,8 +43,8 @@ The system is built with validation mechanisms and includes a comprehensive test
 
 GET: `/v1/swift-codes/{swift-code}`
 
-🔹 **For a headquarter SWIFT code (ends in XXX)**: returns an object containing the bank data plus a list of branches. <br>
-🔹 **For a branch SWIFT code**: empty branches array is returned.
+🔹 **For a headquarter SWIFT code (ends in XXX)**: returns an object containing the bank data with a list of branches.<br>
+🔹 **For a branch SWIFT code**: returns an object containing the bank data with an empty branches array.
 
 #### 2. Get All SWIFT Codes for a Country
 
