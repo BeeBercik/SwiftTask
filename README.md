@@ -107,7 +107,7 @@ docker exec -it <swift-app-container-name> /bin/sh
 
 3. **Run all tests inside the container:**<br>
 ```
-mvn test
+./mvnw test
 ```
 
-💡 The Docker image has Maven built-in, so when you are inside the container, you don’t need to have Maven installed on your machine.
+💡 You do not need to have maven installed on your machine, maven wrapper is included in project files.
