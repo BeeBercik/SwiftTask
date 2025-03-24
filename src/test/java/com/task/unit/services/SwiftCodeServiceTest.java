@@ -9,11 +9,12 @@ import com.task.exceptions.IncorrectSwiftCodeRequestException;
 import com.task.model.SwiftCode;
 import com.task.repositories.SwiftCodeRepository;
 import com.task.services.impl.SwiftCodeService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,8 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 class SwiftCodeServiceTest {
 
     @Mock
@@ -28,11 +31,6 @@ class SwiftCodeServiceTest {
 
     @InjectMocks
     private SwiftCodeService swiftCodeService;
-
-    @BeforeEach
-    public void set() {
-        MockitoAnnotations.openMocks(this);
-    }
 
     @Test
     public void testGetCodeDetails_IfIncorrectCode() {

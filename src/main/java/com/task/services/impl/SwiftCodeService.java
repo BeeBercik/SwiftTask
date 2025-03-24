@@ -16,8 +16,7 @@ import java.util.stream.Collectors;
 
 /**
  * Service class for managing SWIFT codes.
- * This class provides methods for retrieving, adding, and deleting SWIFT codes,
- * as well as validating their correctness.
+ * This class provides methods for retrieving, adding, and deleting swift codes as well as validating their correctness
  */
 @Service
 @RequiredArgsConstructor
@@ -26,7 +25,7 @@ public class SwiftCodeService implements SwiftCodeServiceInterface {
     private final SwiftCodeRepository swiftCodeRepository;
 
     /**
-     * Retrieves details of a specific SWIFT code.
+     * Retrieves details of a specific swift code
      * @param swiftCode swift code to search for
      * @return Optional of {@link SwiftCodeResponse} if found, otherwise empty
      * @throws IncorrectSwiftCodeException if swift code is incorrect
@@ -71,7 +70,7 @@ public class SwiftCodeService implements SwiftCodeServiceInterface {
     }
 
     /**
-     * Retrieves all SWIFT codes associated with given iso2 country code
+     * Retrieves all swift codes associated with given iso2 country code
      * @param isoCode given iso2 code
      * @return optional of {@link CountrySwiftCodesResponse} if swift codes exist for the country otherwise empty
      * @throws IncorrectIso2CodeException if iso2 code is invalid

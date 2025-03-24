@@ -1,12 +1,14 @@
 package com.task.integration.controllers;
 
-import jakarta.transaction.Transactional;
+import com.task.model.SwiftCode;
+import com.task.repositories.SwiftCodeRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -16,16 +18,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
+@ActiveProfiles("test")
 public class SwiftCodeControllerIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    private final MockMvc mockMvc;
+    private final SwiftCodeRepository swiftCodeRepository;
 
+    @Autowired
+    public SwiftCodeControllerIntegrationTest(MockMvc mockMvc, SwiftCodeRepository swiftCodeRepository) {
+        this.mockMvc = mockMvc;
+        this.swiftCodeRepository = swiftCodeRepository;
+    }
+
+    @AfterEach
+    public void cleanUp() {
+        this.swiftCodeRepository.deleteAll();
+    }
 
     @Test
-    @Sql("/test-data.sql")
     public void tesGetCodeDetails_IfSuccess() throws Exception {
+        this.swiftCodeRepository.save(new SwiftCode("12345678", "ADDRESS", "BANK NAME", "PL", "POLAND"));
+
         this.mockMvc.perform(get("/v1/swift-codes/12345678"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.swiftCode").value("12345678"));
@@ -46,8 +59,9 @@ public class SwiftCodeControllerIntegrationTest {
     }
 
     @Test
-    @Sql("/test-data.sql")
     public void testGetAllSwiftCodesByCountry_IfSuccess() throws Exception {
+        this.swiftCodeRepository.save(new SwiftCode("12345678", "ADDRESS", "BANK NAME", "PL", "POLAND"));
+
         this.mockMvc.perform(get("/v1/swift-codes/country/PL"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.swiftCodes").isArray())
@@ -75,8 +89,9 @@ public class SwiftCodeControllerIntegrationTest {
     }
 
     @Test
-    @Sql("/test-data.sql")
     public void testAddNewSwiftCode_IfAlreadyExists() throws Exception {
+        this.swiftCodeRepository.save(new SwiftCode("12345678", "ADDRESS", "BANK NAME", "PL", "POLAND"));
+
         String json = """
             {
               "address": "ADDRESS",
@@ -103,8 +118,9 @@ public class SwiftCodeControllerIntegrationTest {
     }
 
     @Test
-    @Sql("/test-data.sql")
     public void testDeleteSwiftCode_IfSuccess() throws Exception {
+        this.swiftCodeRepository.save(new SwiftCode("12345678", "ADDRESS", "BANK NAME", "PL", "POLAND"));
+
         this.mockMvc.perform(delete("/v1/swift-codes/12345678"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Swift code deleted"));

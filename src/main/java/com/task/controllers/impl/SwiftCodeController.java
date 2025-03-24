@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Optional;
 
 /**
- * REST Controller for managing SWIFT codes.
- * Provides endpoints for retrieving, adding, and deleting SWIFT codes
+ * REST Controller for managing swift codes.
+ * Provides endpoints for retrieving, adding, and deleting swift codes
  */
 @RestController
 @RequiredArgsConstructor
@@ -64,10 +64,10 @@ public class SwiftCodeController implements SwiftCodeControllerInterface {
     }
 
     /**
-     * Deletes an existing SWIFT code from the system
+     * Deletes an existing swift code from the system
      *
-     * @param swiftCode The SWIFT code to delete.
-     * @return ResponseEntity with a success message if the SWIFT code was deleted, or a BAD REQUEST response if it doesnt exist
+     * @param swiftCode The swift code to delete.
+     * @return ResponseEntity with a success message if the SWIFT code was deleted or bad-request response if it doesnt exist
      */
     @DeleteMapping("/{swift-code}")
     public ResponseEntity<HashMap<String, String>> deleteSwiftCode(@PathVariable(name = "swift-code") String swiftCode) {
